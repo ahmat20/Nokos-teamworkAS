@@ -1,83 +1,187 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pilih Layanan</title>
-    <!-- Script Resmi Telegram Mini App -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #18222d;
-            color: #ffffff;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nokos Teamwork AS</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
-        .header {
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
+    /* Background dari bg.png dengan Dark Overlay */
+    body {
+      background: linear-gradient(rgba(11, 14, 20, 0.88), rgba(11, 14, 20, 0.95)), url('bg.png') no-repeat center center fixed;
+      background-size: cover;
+      color: #ffffff;
+      padding-bottom: 80px;
+      min-height: 100vh;
+    }
 
-        /* Desain Dasar Tombol */
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: bold;
-            color: #ffffff;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-        }
+    :root {
+      --neon-blue: #00f0ff;
+      --neon-glow: 0 0 12px rgba(0, 240, 255, 0.4);
+      --card-bg: rgba(30, 39, 56, 0.75);
+      --card-border: rgba(0, 240, 255, 0.25);
+    }
 
-        /* Background Warna Murni */
-        .btn-green { background-color: #28a745; } /* Hijau Murni */
-        .btn-blue  { background-color: #007bff; } /* Biru Murni */
-        .btn-orange{ background-color: #fd7e14; } /* Oranye Murni */
-        .btn-red   { background-color: #dc3545; } /* Merah Murni */
-    </style>
+    .container { padding: 15px; }
+
+    /* Header Statis */
+    .app-header { text-align: center; margin-bottom: 15px; }
+    .app-title { font-size: 18px; font-weight: 800; color: var(--neon-blue); text-shadow: var(--neon-glow); letter-spacing: 1px; }
+    .app-status { font-size: 11px; color: #28a745; margin-top: 2px; }
+
+    /* Neon Card */
+    .neon-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(10px);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 65px;
+      background: rgba(15, 20, 28, 0.95);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(0, 240, 255, 0.25);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #7a8b9e;
+      font-size: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+
+    .nav-item i { font-size: 18px; margin-bottom: 3px; }
+    .nav-item.active { color: var(--neon-blue); text-shadow: var(--neon-glow); }
+
+    /* Floating Main Button (Tengah) */
+    .nav-item.main-btn {
+      position: relative;
+      top: -12px;
+      background: linear-gradient(135deg, #0088cc, #00f0ff);
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+    }
+    .nav-item.main-btn i { font-size: 22px; margin: 0; }
+
+    /* Tab Content */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Input & Search */
+    .search-input {
+      width: 100%;
+      padding: 10px 14px;
+      background: rgba(18, 24, 36, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+      margin-bottom: 12px;
+    }
+    .search-input:focus { border-color: var(--neon-blue); box-shadow: var(--neon-glow); }
+  </style>
 </head>
 <body>
 
-    <div class="header">📱 PILIH LAYANAN</div>
+  <div class="container">
+    
+    <!-- HEADER -->
+    <div class="app-header">
+      <div class="app-title">⚡ NOKOS TEAMWORK AS</div>
+      <div class="app-status">● System Online & Automatic</div>
+    </div>
 
-    <!-- Tombol-tombol Berwarna Murni -->
-    <button class="btn btn-green" onclick="pilihLayanan('Togo - WhatsApp')">
-        🟢 Togo [WhatsApp] - Rp 3.500
-    </button>
+    <!-- TAB 1: RIWAYAT (KIRI) -->
+    <div id="tab-history" class="tab-content">
+      <div class="neon-card">
+        <h4 style="color: var(--neon-blue); margin-bottom: 10px;"><i class="fa-solid fa-list-check"></i> 5 Pesanan Terakhir</h4>
+        <p style="font-size: 12px; color: #8a99ad;">Belum ada riwayat pesanan.</p>
+      </div>
 
-    <button class="btn btn-blue" onclick="pilihLayanan('Tajikistan - Telegram')">
-        🔵 Tajikistan [Telegram] - Rp 4.000
-    </button>
+      <div class="neon-card">
+        <h4 style="color: var(--neon-blue); margin-bottom: 10px;"><i class="fa-solid fa-wallet"></i> 5 Deposit Terakhir</h4>
+        <p style="font-size: 12px; color: #8a99ad;">Belum ada riwayat deposit.</p>
+      </div>
+    </div>
 
-    <button class="btn btn-orange" onclick="pilihLayanan('Indonesia - Gojek')">
-        🟠 Indonesia [Gojek] - Rp 2.500
-    </button>
+    <!-- TAB 2: KATALOG UTAMA (TENGAH) -->
+    <div id="tab-catalog" class="tab-content active">
+      <div class="neon-card">
+        <input type="text" class="search-input" placeholder="🔍 Cari layanan (WhatsApp, Gojek...)...">
+        
+        <p style="text-align: center; color: var(--neon-blue); font-size: 13px; margin-top: 10px;">
+          ⚡ Pilih layanan nomor virtual siap pakai
+        </p>
+      </div>
+    </div>
 
-    <button class="btn btn-red" onclick="tutupApp()">
-        🔴 Batal / Tutup
-    </button>
+    <!-- TAB 3: PROFIL (KANAN) -->
+    <div id="tab-profile" class="tab-content">
+      <div class="neon-card">
+        <h3 id="user-name" style="color: #fff;">@Pablo_escobar200300</h3>
+        <p id="user-id" style="font-size: 12px; color: #8a99ad; margin-bottom: 10px;">ID: 7718733535</p>
+        <hr style="border-color: rgba(255,255,255,0.1); margin-bottom: 10px;">
+        <p style="font-size: 14px;">💰 Saldo Aktif: <b style="color: var(--neon-blue);" id="user-balance">Rp 47.669</b></p>
+      </div>
+    </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand(); // Buka jendela Mini App penuh di layar HP
+  </div>
 
-        function pilihLayanan(namaLayanan) {
-            // Mengirim data pilihan kembali ke chat Telegram
-            tg.sendData(namaLayanan);
-            tg.close();
-        }
+  <!-- BOTTOM NAVIGATION BAR -->
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="switchTab('history', this)">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      <span>Riwayat</span>
+    </div>
 
-        function tutupApp() {
-            tg.close();
-        }
-    </script>
+    <div class="nav-item main-btn active" onclick="switchTab('catalog', this)">
+      <i class="fa-solid fa-bolt"></i>
+    </div>
+
+    <div class="nav-item" onclick="switchTab('profile', this)">
+      <i class="fa-solid fa-user"></i>
+      <span>Profil</span>
+    </div>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    function switchTab(tabName, el) {
+      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(ni => ni.classList.remove('active'));
+
+      document.getElementById('tab-' + tabName).classList.add('active');
+      el.classList.add('active');
+    }
+  </script>
 </body>
 </html>
