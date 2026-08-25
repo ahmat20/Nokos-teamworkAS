@@ -1,291 +1,583 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nokos Teamwork AS</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOKOS TEAMWORK AS - Spin & Check-in</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: rgba(16, 24, 39, 0.85);
+            --accent-color: #00f2fe;
+            --accent-gradient: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --border-color: rgba(0, 242, 254, 0.2);
+        }
 
-    body {
-      background: linear-gradient(rgba(11, 14, 20, 0.88), rgba(11, 14, 20, 0.95)), url('bg.png') no-repeat center center fixed;
-      background-size: cover;
-      color: #ffffff;
-      padding-bottom: 80px;
-      min-height: 100vh;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    :root {
-      --neon-blue: #00f0ff;
-      --neon-glow: 0 0 12px rgba(0, 240, 255, 0.4);
-      --card-bg: rgba(30, 39, 56, 0.75);
-      --card-border: rgba(0, 240, 255, 0.25);
-    }
+        body {
+            background-color: var(--bg-color);
+            /* Menggunakan background asli yang persis seperti style GitHub kamu */
+            background-image: linear-gradient(rgba(11, 15, 25, 0.8), rgba(11, 15, 25, 0.8)), url('https://i.ibb.co.com/84N3639/IMG-20260825-085603.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+        }
 
-    .container { padding: 15px; }
+        header {
+            text-align: center;
+            padding: 20px 15px 10px;
+        }
 
-    .app-header { text-align: center; margin-bottom: 15px; }
-    .app-title { font-size: 18px; font-weight: 800; color: var(--neon-blue); text-shadow: var(--neon-glow); letter-spacing: 1px; }
-    .app-status { font-size: 11px; color: #28a745; margin-top: 2px; }
+        header h1 {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
 
-    .neon-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      backdrop-filter: blur(10px);
-      border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    }
+        header p {
+            font-size: 0.75rem;
+            color: #22c55e;
+            margin-top: 4px;
+        }
 
-    .section-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--neon-blue);
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+        .container {
+            flex: 1;
+            padding: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+            width: 100%;
+        }
 
-    /* Tombol Pilihan Menu Ala Bot Telegram */
-    .bot-btn {
-      width: 100%;
-      background: rgba(18, 24, 36, 0.9);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 12px 14px;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 600;
-      text-align: left;
-      margin-bottom: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: 0.2s;
-    }
-    .bot-btn:hover, .bot-btn:active {
-      border-color: var(--neon-blue);
-      box-shadow: var(--neon-glow);
-      background: rgba(0, 240, 255, 0.1);
-    }
-    .bot-btn span.desc {
-      font-size: 11px;
-      color: #94a3b8;
-      font-weight: 400;
-      display: block;
-      margin-top: 2px;
-    }
+        .view-section {
+            display: none;
+        }
 
-    /* Bottom Navigation Bar */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 65px;
-      background: rgba(15, 20, 28, 0.95);
-      backdrop-filter: blur(12px);
-      border-top: 1px solid rgba(0, 240, 255, 0.25);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 999;
-    }
+        .view-section.active {
+            display: block;
+        }
 
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: #7a8b9e;
-      font-size: 10px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: 0.2s;
-    }
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            margin-bottom: 20px;
+            text-align: center;
+        }
 
-    .nav-item i { font-size: 18px; margin-bottom: 3px; }
-    .nav-item.active { color: var(--neon-blue); text-shadow: var(--neon-glow); }
+        /* Carousel Spin */
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
 
-    .nav-item.main-btn {
-      position: relative;
-      top: -12px;
-      background: linear-gradient(135deg, #0088cc, #00f0ff);
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #fff;
-      box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
-    }
-    .nav-item.main-btn i { font-size: 22px; margin: 0; }
+        .carousel-track {
+            display: flex;
+            transition: transform 0.3s ease-in-out;
+            width: 300%;
+        }
 
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-  </style>
+        .spin-card {
+            width: 33.333%;
+            flex-shrink: 0;
+            padding: 0 5px;
+        }
+
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .dot.active {
+            background: var(--accent-color);
+            box-shadow: 0 0 8px var(--accent-color);
+        }
+
+        .wheel-box {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin: 15px auto;
+            border-radius: 50%;
+            border: 5px solid var(--accent-color);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 20px solid #ef4444;
+            z-index: 10;
+        }
+
+        .wheel-text {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-main);
+            padding: 10px;
+        }
+
+        .btn {
+            background: var(--accent-gradient);
+            color: #0b0f19;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
+            transition: 0.2s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn:disabled {
+            background: #475569;
+            color: #94a3b8;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* Calendar */
+        .calendar-header {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: var(--accent-color);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .calendar-day {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+
+        .calendar-day.checked {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .calendar-day.today {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 8px rgba(0, 242, 254, 0.4);
+        }
+
+        /* History List & Voucher Card */
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .history-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .history-title {
+            font-weight: bold;
+            color: var(--accent-color);
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .history-time {
+            font-size: 0.75rem;
+            color: #facc15;
+            margin-bottom: 8px;
+        }
+
+        .claim-badge {
+            display: inline-block;
+            background: #22c55e;
+            color: #0b0f19;
+            font-weight: bold;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-top: 5px;
+        }
+
+        .expired-badge {
+            display: inline-block;
+            background: #ef4444;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-top: 5px;
+        }
+
+        .btn-claim-action {
+            background: #22c55e;
+            color: #0b0f19;
+            border: none;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 6px;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #0f172a;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .nav-item svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+
+        .nav-item.active {
+            color: var(--accent-color);
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+
+        .modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid var(--accent-color);
+            padding: 25px;
+            border-radius: 16px;
+            width: 85%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.3);
+        }
+
+        .modal-content h3 {
+            color: var(--accent-color);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .modal-content p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="container">
-    
-    <!-- HEADER -->
-    <div class="app-header">
-      <div class="app-title">⚡ NOKOS TEAMWORK AS</div>
-      <div class="app-status">● System Online & Automatic</div>
-    </div>
+    <header>
+        <h1>⚡ NOKOS TEAMWORK AS</h1>
+        <p>🟢 System Online & Automatic</p>
+    </header>
 
-    <!-- TAB 1: RIWAYAT (KIRI) -->
-    <div id="tab-history" class="tab-content">
-      <div class="neon-card" id="history-orders">
-        <h4 class="section-title"><i class="fa-solid fa-list-check"></i> 5 Pesanan Terakhir</h4>
-        <p style="font-size: 12px; color: #8a99ad;">Belum ada riwayat pesanan.</p>
-      </div>
-
-      <div class="neon-card" id="history-deposits">
-        <h4 class="section-title"><i class="fa-solid fa-wallet"></i> 5 Deposit Terakhir</h4>
-        <p style="font-size: 12px; color: #8a99ad;">Belum ada riwayat deposit.</p>
-      </div>
-    </div>
-
-    <!-- TAB 2: BELI NOMOR / KATALOG UTAMA (TENGAH) -->
-    <div id="tab-catalog" class="tab-content active">
-      
-      <!-- TAHAP 1: PILIH KATEGORI SERVER -->
-      <div id="view-server" class="catalog-view">
-        <div class="neon-card">
-          <div class="section-title">⚡ PILIH KATEGORI SERVER</div>
-          <p style="font-size: 11px; color: #94a3b8; margin-bottom: 12px;">Pilih kualitas dan rentang harga nomor yang sesuai dengan kebutuhan kamu:</p>
-          
-          <button class="bot-btn" onclick="selectServer('Standard')">
-            <i class="fa-solid fa-bolt" style="color: var(--neon-blue); font-size: 16px;"></i>
-            <div>
-              <b>Server Standard</b>
-              <span class="desc">Harga : Rp 50 - Rp 2.700 | Nomor ekonomis, stok melimpah, hemat saldo.</span>
+    <div class="container">
+        <!-- VIEW 1: HADIAH SAYA (Pojok Kiri Bawah) -->
+        <div id="view-history" class="view-section">
+            <div class="panel">
+                <h3 style="margin-bottom: 10px; color: var(--accent-color);">🎁 Hadiah Saya</h3>
+                <p style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 15px; text-align: left;">
+                    💡 <b>Cara Klaim:</b> Screenshot voucher di bawah, kirim ke Admin CS. Jika sudah ditambah saldo oleh admin, klik tombol <b>"Tandai Sudah Diklaim"</b>. Wajib klaim dalam waktu <b>1x24 jam</b>!
+                </p>
+                <div class="history-list" id="historyListContainer">
+                    <div style="color: var(--text-muted); font-size: 0.8rem; padding: 20px;">Belum ada voucher.</div>
+                </div>
             </div>
-          </button>
+        </div>
 
-          <button class="bot-btn" onclick="selectServer('Premium')">
-            <i class="fa-solid fa-crown" style="color: #ffd700; font-size: 16px;"></i>
-            <div>
-              <b>Server Premium</b>
-              <span class="desc">Harga : > Rp 2.700 | Jalur server prioritas, garansi OTP super kencang.</span>
+        <!-- VIEW 2: SPIN & RODA KEBERUNTUNGAN (Menu Tengah) -->
+        <div id="view-spin" class="view-section active">
+            <div class="panel">
+                <h3 style="margin-bottom: 10px; color: var(--accent-color);">🎡 Roda Keberuntungan</h3>
+                <p style="font-size: 0.8rem; margin-bottom: 10px;">Tiket Anda: <b id="userTickets" style="color: #22c55e;">0</b> Tiket</p>
+                
+                <div class="carousel-nav">
+                    <div class="dot active" onclick="switchSlide(0)"></div>
+                    <div class="dot" onclick="switchSlide(1)"></div>
+                    <div class="dot" onclick="switchSlide(2)"></div>
+                </div>
+
+                <div class="carousel-container">
+                    <div class="carousel-track" id="carouselTrack">
+                        
+                        <!-- Mini Spin -->
+                        <div class="spin-card">
+                            <h4 style="font-size: 0.9rem; color: #38bdf8;">Mini Spin</h4>
+                            <p style="font-size: 0.7rem; color: var(--text-muted);">Biaya: 1 Tiket | Hadiah: Voucher kecil</p>
+                            <div class="wheel-box">
+                                <div class="wheel-pointer"></div>
+                                <div class="wheel-text" id="wheelText0">MINI SPIN<br>Siap Putar</div>
+                            </div>
+                            <button class="btn" onclick="startSpin(0, 1)">Putar Mini Spin (1 Tiket)</button>
+                        </div>
+
+                        <!-- Mega Spin -->
+                        <div class="spin-card">
+                            <h4 style="font-size: 0.9rem; color: #facc15;">Mega Spin</h4>
+                            <p style="font-size: 0.7rem; color: var(--text-muted);">Biaya: 5 Tiket | Hadiah: Voucher sedang</p>
+                            <div class="wheel-box">
+                                <div class="wheel-pointer"></div>
+                                <div class="wheel-text" id="wheelText1">MEGA SPIN<br>Siap Putar</div>
+                            </div>
+                            <button class="btn" onclick="startSpin(1, 5)">Putar Mega Spin (5 Tiket)</button>
+                        </div>
+
+                        <!-- Super Spin -->
+                        <div class="spin-card">
+                            <h4 style="font-size: 0.9rem; color: #ef4444;">Super Spin</h4>
+                            <p style="font-size: 0.7rem; color: var(--text-muted);">Biaya: 10 Tiket | Hadiah: Max Rp 5.000</p>
+                            <div class="wheel-box">
+                                <div class="wheel-pointer"></div>
+                                <div class="wheel-text" id="wheelText2">SUPER SPIN<br>Siap Putar</div>
+                            </div>
+                            <button class="btn" onclick="startSpin(2, 10)">Putar Super Spin (10 Tiket)</button>
+                        </div>
+
+                    </div>
+                </div>
             </div>
-          </button>
         </div>
-      </div>
 
-      <!-- TAHAP 2: PILIH KATEGORI APLIKASI (MUNCUL SETELAH SERVER DIPILIH) -->
-      <div id="view-category" class="catalog-view" style="display: none;">
-        <div class="neon-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <div class="section-title" id="selected-server-title" style="margin-bottom:0;">📱 PILIH KATEGORI APLIKASI</div>
-            <button onclick="backToServer()" style="background:none; border:none; color: var(--neon-blue); font-size: 11px; cursor:pointer;"><i class="fa-solid fa-arrow-left"></i> Ganti Server</button>
-          </div>
-          <p style="font-size: 11px; color: #94a3b8; margin-bottom: 12px;">Pilih kelompok aplikasi yang ingin kamu beli:</p>
-
-          <button class="bot-btn" onclick="selectCategory('E-Commerce')">
-            <i class="fa-solid fa-bag-shopping" style="color: #ff6600;"></i>
-            <div><b>E-Commerce & Marketplace</b></div>
-          </button>
-
-          <button class="bot-btn" onclick="selectCategory('Social')">
-            <i class="fa-solid fa-comments" style="color: #00f0ff;"></i>
-            <div><b>Chat & Social Media</b></div>
-          </button>
-
-          <button class="bot-btn" onclick="selectCategory('E-Wallet')">
-            <i class="fa-solid fa-wallet" style="color: #28a745;"></i>
-            <div><b>E-Wallet & Finansial</b></div>
-          </button>
-
-          <button class="bot-btn" onclick="selectCategory('Transport')">
-            <i class="fa-solid fa-car" style="color: #00d2ff;"></i>
-            <div><b>Transportasi & Ojek Online</b></div>
-          </button>
-
-          <button class="bot-btn" onclick="selectCategory('All')">
-            <i class="fa-solid fa-globe" style="color: #a855f7;"></i>
-            <div><b>Semua Layanan (A-Z)</b></div>
-          </button>
+        <!-- VIEW 3: CHECK-IN HARIAN (Pojok Kanan Bawah) -->
+        <div id="view-checkin" class="view-section">
+            <div class="panel">
+                <div class="calendar-header" id="calendarTitle">Kalender Check-in</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">
+                    Absen tiap hari, kumpulkan 3 hari beruntun untuk dapat <b>1 Tiket Spin</b>!
+                </p>
+                <div class="calendar-grid" id="calendarGrid"></div>
+                <button class="btn" id="checkinBtn" onclick="doCheckIn()">Check-in Hari Ini ✅</button>
+            </div>
         </div>
-      </div>
-
     </div>
 
-    <!-- TAB 3: PROFIL (KANAN) -->
-    <div id="tab-profile" class="tab-content">
-      <div class="neon-card">
-        <h3 id="user-name" style="color: #fff;">Loading...</h3>
-        <p id="user-id" style="font-size: 12px; color: #8a99ad; margin-bottom: 10px;">ID: -</p>
-        <hr style="border-color: rgba(255,255,255,0.1); margin-bottom: 10px;">
-        <p style="font-size: 14px; margin-bottom: 6px;">💰 Saldo Aktif: <b style="color: var(--neon-blue);" id="user-balance">Rp 0</b></p>
-        <p style="font-size: 14px;">💳 Total Deposit: <b style="color: #28a745;" id="user-total-deposit">Rp 0</b></p>
-      </div>
+    <!-- Bottom Navigation Bar -->
+    <nav class="nav-bar">
+        <button class="nav-item" onclick="switchView('history')">
+            <svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6a7 7 0 0 1 7-7 7 7 0 0 1 7 7 7 7 0 0 1-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.92 8.92 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+            Hadiah Saya
+        </button>
+        <button class="nav-item active" onclick="switchView('spin')">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            Spin
+        </button>
+        <button class="nav-item" onclick="switchView('checkin')">
+            <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+            Check-in
+        </button>
+    </nav>
+
+    <!-- Modal Popup -->
+    <div class="modal" id="resultModal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Selamat! 🎉</h3>
+            <p id="modalDesc">Kamu mendapatkan Voucher!</p>
+            <p style="font-size: 0.7rem; color: #ef4444; font-weight: bold;">*Wajib klaim ke Admin CS dalam 1x24 jam!</p>
+            <button class="btn" onclick="closeModal()">OK, Mengerti</button>
+        </div>
     </div>
 
-  </div>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
 
-  <!-- BOTTOM NAVIGATION BAR -->
-  <div class="bottom-nav">
-    <div class="nav-item" onclick="switchTab('history', this)">
-      <i class="fa-solid fa-clock-rotate-left"></i>
-      <span>Riwayat</span>
-    </div>
+        let appData = JSON.parse(localStorage.getItem('nokos_spin_data')) || {
+            tickets: 2,
+            lastCheckIn: "",
+            streakCount: 0,
+            checkedDays: [],
+            history: []
+        };
 
-    <div class="nav-item main-btn active" onclick="switchTab('catalog', this)">
-      <i class="fa-solid fa-bolt"></i>
-      <span style="font-size: 9px; margin-top: 2px; color: #fff;">Beli Nomor</span>
-    </div>
+        function saveData() {
+            localStorage.setItem('nokos_spin_data', JSON.stringify(appData));
+        }
 
-    <div class="nav-item" onclick="switchTab('profile', this)">
-      <i class="fa-solid fa-user"></i>
-      <span>Profil</span>
-    </div>
-  </div>
+        function switchView(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+            if (viewName === 'history') {
+                document.getElementById('view-history').classList.add('active');
+                document.querySelectorAll('.nav-item')[0].classList.add('active');
+                renderHistory();
+            } else if (viewName === 'spin') {
+                document.getElementById('view-spin').classList.add('active');
+                document.querySelectorAll('.nav-item')[1].classList.add('active');
+            } else if (viewName === 'checkin') {
+                document.getElementById('view-checkin').classList.add('active');
+                document.querySelectorAll('.nav-item')[2].classList.add('active');
+                renderCalendar();
+            }
+        }
 
-    const user = tg.initDataUnsafe?.user;
-    if (user) {
-      const usernameText = user.username ? `@${user.username}` : user.first_name;
-      document.getElementById('user-name').innerText = usernameText;
-      document.getElementById('user-id').innerText = `ID: ${user.id}`;
-    } else {
-      document.getElementById('user-name').innerText = '@Pablo_escobar200300';
-      document.getElementById('user-id').innerText = 'ID: 7718733535';
-    }
+        const track = document.getElementById('carouselTrack');
+        const dots = document.querySelectorAll('.dot');
 
-    // Logika Alur Tombol Pembelian Ala Bot Telegram
-    function selectServer(serverName) {
-      document.getElementById('view-server').style.display = 'none';
-      document.getElementById('view-category').style.display = 'block';
-      document.getElementById('selected-server-title').innerText = `SERVER ${serverName.toUpperCase()}`;
-    }
+        function switchSlide(index) {
+            track.style.transform = `translateX(-${index * 33.333}%)`;
+            dots.forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === index);
+            });
+        }
 
-    function backToServer() {
-      document.getElementById('view-category').style.display = 'none';
-      document.getElementById('view-server').style.display = 'block';
-    }
+        function updateTicketDisplay() {
+            document.getElementById('userTickets').innerText = appData.tickets;
+        }
+        updateTicketDisplay();
 
-    function selectCategory(catName) {
-      alert("Menampilkan daftar layanan untuk kategori: " + catName);
-    }
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const todayDate = now.getDate();
+        const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        
+        document.getElementById('calendarTitle').innerText = `Kalender ${monthNames[month]} ${year}`;
 
-    function switchTab(tabName, el) {
-      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(ni => ni.classList.remove('active'));
+        function getDaysInMonth(y, m) {
+            return new Date(y, m + 1, 0).getDate();
+        }
 
-      document.getElementById('tab-' + tabName).classList.add('active');
-      el.classList.add('active');
-    }
-  </script>
-</body>
-</html>
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+            const totalDays = getDaysInMonth(year, month);
+
+            for (let i = 1; i <= totalDays; i++) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day';
+                if (i === todayDate) dayEl.classList.add('today');
+                
+                const isChecked = appData.checkedDays.includes(i);
+                if (isChecked) dayEl.classList.add('checked');
+
+                dayEl.innerHTML = `<span>${i}</span><span style="font-size:0.6rem;">${isChecked ? '✔️' : ''}</span>`;
+                grid.appendChild(dayEl);
+            }
+
+            const btn = document.getElementById('checkinBtn');
+            const todayStr = `${year}-${month}-${todayDate}`;
+            if (appData.lastCheckIn === todayStr) {
+                btn.innerText = "Sudah Check-in Hari Ini ✅";
+                btn.disabled = true;
+            } else {
+                btn.innerText = "Check-in Hari Ini ✅";
+                btn.disabled = false;
+            }
+        }
+
+        function doCheckIn() {
+            const todayStr = `${year}-${month}-${todayDate}`;
+            if (appData.lastCheckIn === todayStr) return;
+
+            appData.lastCheckIn = todayStr;
+            appData.checkedDays.push(todayDate);
+            appData.streakCount += 1;
+
+            let msg = `Check
