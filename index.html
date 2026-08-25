@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nokos Teamwork AS</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+    body {
+      background: linear-gradient(rgba(11, 14, 20, 0.88), rgba(11, 14, 20, 0.95)), url('bg.png') no-repeat center center fixed;
+      background-size: cover;
+      color: #ffffff;
+      padding-bottom: 80px;
+      min-height: 100vh;
+    }
+
+    :root {
+      --neon-blue: #00f0ff;
+      --neon-glow: 0 0 12px rgba(0, 240, 255, 0.4);
+      --card-bg: rgba(30, 39, 56, 0.75);
+      --card-border: rgba(0, 240, 255, 0.25);
+    }
+
+    .container { padding: 15px; }
+
+    .app-header { text-align: center; margin-bottom: 15px; }
+    .app-title { font-size: 18px; font-weight: 800; color: var(--neon-blue); text-shadow: var(--neon-glow); letter-spacing: 1px; }
+    .app-status { font-size: 11px; color: #28a745; margin-top: 2px; }
+
+    .neon-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(10px);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--neon-blue);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Tombol Pilihan Menu Ala Bot Telegram */
+    .bot-btn {
+      width: 100%;
+      background: rgba(18, 24, 36, 0.9);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: left;
+      margin-bottom: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: 0.2s;
+    }
+    .bot-btn:hover, .bot-btn:active {
+      border-color: var(--neon-blue);
+      box-shadow: var(--neon-glow);
+      background: rgba(0, 240, 255, 0.1);
+    }
+    .bot-btn span.desc {
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 400;
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 65px;
+      background: rgba(15, 20, 28, 0.95);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(0, 240, 255, 0.25);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #7a8b9e;
+      font-size: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+
+    .nav-item i { font-size: 18px; margin-bottom: 3px; }
+    .nav-item.active { color: var(--neon-blue); text-shadow: var(--neon-glow); }
+
+    .nav-item.main-btn {
+      position: relative;
+      top: -12px;
+      background: linear-gradient(135deg, #0088cc, #00f0ff);
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+    }
+    .nav-item.main-btn i { font-size: 22px; margin: 0; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- HEADER -->
+    <div class="app-header">
+      <div class="app-title">⚡ NOKOS TEAMWORK AS</div>
+      <div class="app-status">● System Online & Automatic</div>
+    </div>
+
+    <!-- TAB 1: RIWAYAT (KIRI) -->
+    <div id="tab-history" class="tab-content">
+      <div class="neon-card" id="history-orders">
+        <h4 class="section-title"><i class="fa-solid fa-list-check"></i> 5 Pesanan Terakhir</h4>
+        <p style="font-size: 12px; color: #8a99ad;">Belum ada riwayat pesanan.</p>
+      </div>
+
+      <div class="neon-card" id="history-deposits">
+        <h4 class="section-title"><i class="fa-solid fa-wallet"></i> 5 Deposit Terakhir</h4>
+        <p style="font-size: 12px; color: #8a99ad;">Belum ada riwayat deposit.</p>
+      </div>
+    </div>
+
+    <!-- TAB 2: BELI NOMOR / KATALOG UTAMA (TENGAH) -->
+    <div id="tab-catalog" class="tab-content active">
+      
+      <!-- TAHAP 1: PILIH KATEGORI SERVER -->
+      <div id="view-server" class="catalog-view">
+        <div class="neon-card">
+          <div class="section-title">⚡ PILIH KATEGORI SERVER</div>
+          <p style="font-size: 11px; color: #94a3b8; margin-bottom: 12px;">Pilih kualitas dan rentang harga nomor yang sesuai dengan kebutuhan kamu:</p>
+          
+          <button class="bot-btn" onclick="selectServer('Standard')">
+            <i class="fa-solid fa-bolt" style="color: var(--neon-blue); font-size: 16px;"></i>
+            <div>
+              <b>Server Standard</b>
+              <span class="desc">Harga : Rp 50 - Rp 2.700 | Nomor ekonomis, stok melimpah, hemat saldo.</span>
+            </div>
+          </button>
+
+          <button class="bot-btn" onclick="selectServer('Premium')">
+            <i class="fa-solid fa-crown" style="color: #ffd700; font-size: 16px;"></i>
+            <div>
+              <b>Server Premium</b>
+              <span class="desc">Harga : > Rp 2.700 | Jalur server prioritas, garansi OTP super kencang.</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- TAHAP 2: PILIH KATEGORI APLIKASI (MUNCUL SETELAH SERVER DIPILIH) -->
+      <div id="view-category" class="catalog-view" style="display: none;">
+        <div class="neon-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div class="section-title" id="selected-server-title" style="margin-bottom:0;">📱 PILIH KATEGORI APLIKASI</div>
+            <button onclick="backToServer()" style="background:none; border:none; color: var(--neon-blue); font-size: 11px; cursor:pointer;"><i class="fa-solid fa-arrow-left"></i> Ganti Server</button>
+          </div>
+          <p style="font-size: 11px; color: #94a3b8; margin-bottom: 12px;">Pilih kelompok aplikasi yang ingin kamu beli:</p>
+
+          <button class="bot-btn" onclick="selectCategory('E-Commerce')">
+            <i class="fa-solid fa-bag-shopping" style="color: #ff6600;"></i>
+            <div><b>E-Commerce & Marketplace</b></div>
+          </button>
+
+          <button class="bot-btn" onclick="selectCategory('Social')">
+            <i class="fa-solid fa-comments" style="color: #00f0ff;"></i>
+            <div><b>Chat & Social Media</b></div>
+          </button>
+
+          <button class="bot-btn" onclick="selectCategory('E-Wallet')">
+            <i class="fa-solid fa-wallet" style="color: #28a745;"></i>
+            <div><b>E-Wallet & Finansial</b></div>
+          </button>
+
+          <button class="bot-btn" onclick="selectCategory('Transport')">
+            <i class="fa-solid fa-car" style="color: #00d2ff;"></i>
+            <div><b>Transportasi & Ojek Online</b></div>
+          </button>
+
+          <button class="bot-btn" onclick="selectCategory('All')">
+            <i class="fa-solid fa-globe" style="color: #a855f7;"></i>
+            <div><b>Semua Layanan (A-Z)</b></div>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB 3: PROFIL (KANAN) -->
+    <div id="tab-profile" class="tab-content">
+      <div class="neon-card">
+        <h3 id="user-name" style="color: #fff;">Loading...</h3>
+        <p id="user-id" style="font-size: 12px; color: #8a99ad; margin-bottom: 10px;">ID: -</p>
+        <hr style="border-color: rgba(255,255,255,0.1); margin-bottom: 10px;">
+        <p style="font-size: 14px; margin-bottom: 6px;">💰 Saldo Aktif: <b style="color: var(--neon-blue);" id="user-balance">Rp 0</b></p>
+        <p style="font-size: 14px;">💳 Total Deposit: <b style="color: #28a745;" id="user-total-deposit">Rp 0</b></p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAVIGATION BAR -->
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="switchTab('history', this)">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      <span>Riwayat</span>
+    </div>
+
+    <div class="nav-item main-btn active" onclick="switchTab('catalog', this)">
+      <i class="fa-solid fa-bolt"></i>
+      <span style="font-size: 9px; margin-top: 2px; color: #fff;">Beli Nomor</span>
+    </div>
+
+    <div class="nav-item" onclick="switchTab('profile', this)">
+      <i class="fa-solid fa-user"></i>
+      <span>Profil</span>
+    </div>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const user = tg.initDataUnsafe?.user;
+    if (user) {
+      const usernameText = user.username ? `@${user.username}` : user.first_name;
+      document.getElementById('user-name').innerText = usernameText;
+      document.getElementById('user-id').innerText = `ID: ${user.id}`;
+    } else {
+      document.getElementById('user-name').innerText = '@Pablo_escobar200300';
+      document.getElementById('user-id').innerText = 'ID: 7718733535';
+    }
+
+    // Logika Alur Tombol Pembelian Ala Bot Telegram
+    function selectServer(serverName) {
+      document.getElementById('view-server').style.display = 'none';
+      document.getElementById('view-category').style.display = 'block';
+      document.getElementById('selected-server-title').innerText = `SERVER ${serverName.toUpperCase()}`;
+    }
+
+    function backToServer() {
+      document.getElementById('view-category').style.display = 'none';
+      document.getElementById('view-server').style.display = 'block';
+    }
+
+    function selectCategory(catName) {
+      alert("Menampilkan daftar layanan untuk kategori: " + catName);
+    }
+
+    function switchTab(tabName, el) {
+      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(ni => ni.classList.remove('active'));
+
+      document.getElementById('tab-' + tabName).classList.add('active');
+      el.classList.add('active');
+    }
+  </script>
+</body>
+</html>
