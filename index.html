@@ -9,7 +9,6 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
-    /* Background dari bg.png dengan Dark Overlay Transparan */
     body {
       background: linear-gradient(rgba(11, 14, 20, 0.88), rgba(11, 14, 20, 0.95)), url('bg.png') no-repeat center center fixed;
       background-size: cover;
@@ -27,12 +26,10 @@
 
     .container { padding: 15px; }
 
-    /* Header Statis */
     .app-header { text-align: center; margin-bottom: 15px; }
     .app-title { font-size: 18px; font-weight: 800; color: var(--neon-blue); text-shadow: var(--neon-glow); letter-spacing: 1px; }
     .app-status { font-size: 11px; color: #28a745; margin-top: 2px; }
 
-    /* Neon Card */
     .neon-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -43,7 +40,6 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
 
-    /* Bottom Navigation Bar */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -73,7 +69,6 @@
     .nav-item i { font-size: 18px; margin-bottom: 3px; }
     .nav-item.active { color: var(--neon-blue); text-shadow: var(--neon-glow); }
 
-    /* Floating Main Button (Tengah) */
     .nav-item.main-btn {
       position: relative;
       top: -12px;
@@ -89,11 +84,9 @@
     }
     .nav-item.main-btn i { font-size: 22px; margin: 0; }
 
-    /* Tab Content */
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* Input & Search */
     .search-input {
       width: 100%;
       padding: 10px 14px;
@@ -148,7 +141,7 @@
         <h3 id="user-name" style="color: #fff;">Loading...</h3>
         <p id="user-id" style="font-size: 12px; color: #8a99ad; margin-bottom: 10px;">ID: -</p>
         <hr style="border-color: rgba(255,255,255,0.1); margin-bottom: 10px;">
-        <p style="font-size: 14px;">💰 Saldo Aktif: <b style="color: var(--neon-blue);" id="user-balance">Rp 0</b></p>
+        <p style="font-size: 14px;">💰 Saldo Aktif: <b style="color: var(--neon-blue);" id="user-balance">Rp 47.669</b></p>
       </div>
     </div>
 
@@ -175,18 +168,16 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // 🟢 PEMBACAAN OTOMATIS DATA USER TELEGRAM
     const user = tg.initDataUnsafe?.user;
     if (user) {
       const usernameText = user.username ? `@${user.username}` : user.first_name;
       document.getElementById('user-name').innerText = usernameText;
       document.getElementById('user-id').innerText = `ID: ${user.id}`;
     } else {
-      document.getElementById('user-name').innerText = 'Pengguna Telegram';
-      document.getElementById('user-id').innerText = 'ID: -';
+      document.getElementById('user-name').innerText = '@Pablo_escobar200300';
+      document.getElementById('user-id').innerText = 'ID: 7718733535';
     }
 
-    // FUNGSI NAVIGASI BOTTOM BAR
     function switchTab(tabName, el) {
       document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(ni => ni.classList.remove('active'));
