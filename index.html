@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOKOS TEAMWORK AS - Spin, Box & Redeem MiniApp</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- OVERLAY MAINTENANCE -->
+    <div id="maintenanceOverlay"></div>
+
+    <!-- HEADER / PROFILE SECTION -->
+    <header>
+        <div class="header-content">
+            <div class="profile-avatar" id="profileAvatarBtn" onclick="handleAvatarTap()">
+                <span id="avatarLetter">N</span>
+            </div>
+            <div class="profile-info">
+                <h1 id="userDisplayName">NOKOS TEAMWORK AS</h1>
+                <p>ID: <span id="userTelegramIdDisplay">Loading...</span> | 🟢 System Online</p>
+            </div>
+        </div>
+        <div class="user-stats-bar">
+            <div class="stat-card">
+                <span class="stat-icon">💎</span>
+                <span class="stat-label">Total Poin</span>
+                <b id="userPoints">0</b>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">🎟️</span>
+                <span class="stat-label">Total Tiket</span>
+                <b id="userTickets">0</b>
+            </div>
+        </div>
+    </header>
+
+    <!-- TICKER RUNNING TEXT -->
+    <div class="ticker-container">
+        <div class="ticker-text" id="realtimeTicker">
+            📢 Selamat datang di Nokos Teamwork AS! • Absen check-in harianmu dan kumpulkan tiket gratis sekarang!
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- VIEW 1: TOKO REDEEM -->
+        <div id="view-shop" class="view-section">
+            <div class="panel">
+                <h3 class="panel-title">🏪 Toko Penukaran Poin</h3>
+                <p class="panel-subtitle">Tukarkan poin hasil main Spin & Game Box kamu di sini!</p>
+                
+                <div class="shop-category-title">🤖 Voucher Saldo Bot Telegram</div>
+                <div class="shop-grid">
+                    <div class="shop-card">
+                        <div class="shop-card-badge">SALDO BOT</div>
+                        <h4>Voucher Saldo Rp5.000</h4>
+                        <p class="shop-price">💎 100.000 Poin</p>
+                        <button class="btn btn-shop" onclick="confirmRedeem('Voucher Saldo Bot Rp5.000', 100000, 'bot')">Tukar Sekarang</button>
+                    </div>
+                    <div class="shop-card">
+                        <div class="shop-card-badge">SALDO BOT</div>
+                        <h4>Voucher Saldo Rp10.000</h4>
+                        <p class="shop-price">💎 200.000 Poin</p>
+                        <button class="btn btn-shop" onclick="confirmRedeem('Voucher Saldo Bot Rp10.000', 200000, 'bot')">Tukar Sekarang</button>
+                    </div>
+                    <div class="shop-card">
+                        <div class="shop-card-badge">SALDO BOT</div>
+                        <h4>Voucher Saldo Rp20.000</h4>
+                        <p class="shop-price">💎 400.000 Poin</p>
+                        <button class="btn btn-shop" onclick="confirmRedeem('Voucher Saldo Bot Rp20.000', 400000, 'bot')">Tukar Sekarang</button>
+                    </div>
+                </div>
+
+                <div class="shop-category-title" style="margin-top: 15px;">💸 Cair Tunai (DANA / SeaBank)</div>
+                <div class="shop-grid">
+                    <div class="shop-card card-cash">
+                        <div class="shop-card-badge badge-cash">CAIR TUNAI</div>
+                        <h4>Saldo Tunai Rp10.000</h4>
+                        <p class="shop-price">💎 150.000 Poin</p>
+                        <button class="btn btn-cash" onclick="confirmRedeem('Saldo Tunai DANA/SeaBank Rp10.000', 150000, 'cash')">Cairkan Tunai</button>
+                    </div>
+                    <div class="shop-card card-cash">
+                        <div class="shop-card-badge badge-cash">CAIR TUNAI</div>
+                        <h4>Saldo Tunai Rp25.000</h4>
+                        <p class="shop-price">💎 375.000 Poin</p>
+                        <button class="btn btn-cash" onclick="confirmRedeem('Saldo Tunai DANA/SeaBank Rp25.000', 375000, 'cash')">Cairkan Tunai</button>
+                    </div>
+                    <div class="shop-card card-cash">
+                        <div class="shop-card-badge badge-cash">CAIR TUNAI</div>
+                        <h4>Saldo Tunai Rp50.000</h4>
+                        <p class="shop-price">💎 750.000 Poin</p>
+                        <button class="btn btn-cash" onclick="confirmRedeem('Saldo Tunai DANA/SeaBank Rp50.000', 750000, 'cash')">Cairkan Tunai</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: SPIN WHEEL -->
+        <div id="view-spin" class="view-section active">
+            <div class="panel">
+                <div>
+                    <h3 class="panel-title">🎡 Roda Keberuntungan</h3>
+                    <p class="panel-subtitle">👈 Geser ke samping untuk ganti mode roda 👉</p>
+                    
+                    <div class="carousel-nav">
+                        <div class="dot active" onclick="switchSlide(0)"></div>
+                        <div class="dot" onclick="switchSlide(1)"></div>
+                        <div class="dot" onclick="switchSlide(2)"></div>
+                    </div>
+                </div>
+
+                <div class="carousel-container" id="carouselContainer">
+                    <div class="carousel-track" id="carouselTrack">
+                        <!-- MINI SPIN -->
+                        <div class="spin-card">
+                            <h4 class="spin-badge-title badge-mini">Mini Spin</h4>
+                            <p class="card-desc">Biaya: 1 Tiket | Panen Poin & Tiket Gratis</p>
+                            <div class="wheel-container">
+                                <div class="wheel-pointer"></div>
+                                <canvas id="wheelCanvas0" width="350" height="350"></canvas>
+                            </div>
+                            <button class="btn" onclick="startSpin(0, 1)">Putar Mini Spin (1 Tiket)</button>
+                        </div>
+
+                        <!-- MEGA SPIN -->
+                        <div class="spin-card">
+                            <h4 class="spin-badge-title badge-mega">Mega Spin</h4>
+                            <p class="card-desc">Biaya: 5 Tiket | Jackpot hingga 5.000 Poin!</p>
+                            <div class="wheel-container">
+                                <div class="wheel-pointer"></div>
+                                <canvas id="wheelCanvas1" width="350" height="350"></canvas>
+                            </div>
+                            <button class="btn btn-mega" onclick="startSpin(1, 5)">Putar Mega Spin (5 Tiket)</button>
+                        </div>
+
+                        <!-- SUPER SPIN -->
+                        <div class="spin-card">
+                            <h4 class="spin-badge-title badge-super">Super Spin</h4>
+                            <p class="card-desc">Biaya: 25 Tiket | Direct Tunai Rp100.000</p>
+                            <div class="wheel-container">
+                                <div class="wheel-pointer"></div>
+                                <canvas id="wheelCanvas2" width="350" height="350"></canvas>
+                            </div>
+                            <button class="btn btn-super" onclick="startSpin(2, 25)">Putar Super Spin (25 Tiket)</button>
+                            <div class="cashout-banner-super">
+                                💸 Kesempatan Direct Tunai Rp100.000 langsung cair ke DANA / SeaBank! 💸
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: GAME BOX -->
+        <div id="view-box" class="view-section">
+            <div class="panel" style="justify-content: flex-start;">
+                <h3 class="panel-title">📦 GAME BOX JACKPOT</h3>
+                <p class="panel-subtitle">Buka kotak pilihanmu dan akumulasi poin uniknya!</p>
+
+                <!-- KATALOG BOX -->
+                <div id="boxCategoryList">
+                    <!-- MINI BOX -->
+                    <div class="box-category-card">
+                        <div class="box-icon-wrap">🎁</div>
+                        <div style="flex: 1;">
+                            <h4 style="color: #38bdf8; font-size: 0.95rem;">MINI BOX</h4>
+                            <p class="box-card-desc">Biaya: 1 Tiket | Grid 6 Kotak</p>
+                            <p class="box-card-prize">Akumulasi Max: 500 Poin</p>
+                            <button class="btn" style="padding: 7px 12px; font-size: 0.78rem; margin-top: 6px;" onclick="openBoxConfirm('mini')">MAIN MINI BOX (1 Tiket)</button>
+                        </div>
+                    </div>
+
+                    <!-- MEGA BOX -->
+                    <div class="box-category-card mega-border">
+                        <div class="box-icon-wrap">💎</div>
+                        <div style="flex: 1;">
+                            <h4 style="color: #c084fc; font-size: 0.95rem;">MEGA BOX</h4>
+                            <p class="box-card-desc">Biaya: 5 Tiket | Grid 6 Kotak</p>
+                            <p class="box-card-prize">Akumulasi Max: 1.000 Poin</p>
+                            <button class="btn btn-mega" style="padding: 7px 12px; font-size: 0.78rem; margin-top: 6px;" onclick="openBoxConfirm('mega')">MAIN MEGA BOX (5 Tiket)</button>
+                        </div>
+                    </div>
+
+                    <!-- SUPER BOX -->
+                    <div class="box-category-card super-border">
+                        <div class="box-icon-wrap">👑</div>
+                        <div style="flex: 1;">
+                            <h4 style="color: #facc15; font-size: 0.95rem;">SUPER BOX (Match-3)</h4>
+                            <p class="box-card-desc">Biaya: 30 Tiket | Grid 15 Kotak (Pilih 3)</p>
+                            <p class="box-card-prize" style="color: #facc15;">Direct Hadiah: Rp100.000 TUNAI</p>
+                            <button class="btn btn-super" style="padding: 7px 12px; font-size: 0.78rem; margin-top: 6px;" onclick="enterSuperBoxArena()">MAIN SUPER BOX (30 Tiket)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ARENA GAME BOX GRID -->
+                <div id="boxArenaArea" style="display: none;">
+                    <div class="arena-header">
+                        <button class="btn-back" onclick="exitBoxArena()">⬅️ Kembali</button>
+                        <span id="arenaTitleBadge" class="spin-badge-title badge-mini">MINI BOX</span>
+                    </div>
+                    <p id="arenaSubInstructions" class="panel-subtitle">Klik kotak satu per satu sampai terbuka semua!</p>
+                    
+                    <div id="boxGridContainer" class="box-grid-6"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 4: HADIAH SAYA -->
+        <div id="view-history" class="view-section">
+            <div class="panel" style="justify-content: flex-start;">
+                <h3 class="panel-title">🎁 Riwayat Klaim & Hadiah</h3>
+                <p class="panel-subtitle">Daftar transaksi penukaran poin & klaim kemenangan kamu.</p>
+                <div class="history-list" id="historyListContainer">
+                    <div style="color: var(--text-muted); font-size: 0.8rem; padding: 20px; text-align: center;">Belum ada riwayat transaksi.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 5: CHECK-IN -->
+        <div id="view-checkin" class="view-section">
+            <div class="panel" style="justify-content: flex-start;">
+                <div class="calendar-header" id="calendarTitle">Kalender Check-in</div>
+                <p class="panel-subtitle">Absen setiap hari untuk mendapatkan <b>+1 Tiket Gratis</b>!</p>
+                <div class="calendar-grid" id="calendarGrid"></div>
+                <button class="btn" id="checkinBtn" onclick="doCheckIn()">Check-in Hari Ini ✅</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAV BAR 5 MENU -->
+    <nav class="nav-bar">
+        <button class="nav-item" onclick="switchView('shop')">
+            <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+            Toko
+        </button>
+        <button class="nav-item active" id="navSpinBtn" onclick="switchView('spin')">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            Spin
+        </button>
+        <button class="nav-item" id="navBoxBtn" onclick="switchView('box')">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM12 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            Game Box
+        </button>
+        <button class="nav-item" onclick="switchView('history')">
+            <svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6a7 7 0 0 1 7-7 7 7 0 0 1 7 7 7 7 0 0 1-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.92 8.92 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+            Riwayat
+        </button>
+        <button class="nav-item" onclick="switchView('checkin')">
+            <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+            Check-in
+        </button>
+    </nav>
+
+    <!-- MODAL CONFIRMATION BOX -->
+    <div class="modal" id="boxConfirmModal">
+        <div class="modal-content">
+            <h3 id="boxConfirmTitle">MULAI GAME BOX</h3>
+            <p id="boxConfirmDesc" style="text-align: center;">Konfirmasi penggunaan tiket.</p>
+            <div class="modal-btn-row">
+                <button class="btn btn-secondary" onclick="closeBoxConfirmModal()">Batal</button>
+                <button class="btn" id="boxStartActionBtn">🚀 MULAI MAIN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL REDEEM CASH INPUT -->
+    <div class="modal" id="redeemModal">
+        <div class="modal-content">
+            <h3>CAIRKAN SALDO TUNAI</h3>
+            <p id="redeemModalTitle" style="text-align: center; color: #facc15; font-weight: bold;"></p>
+            <div class="input-group">
+                <label>Pilih Metode Pembayaran:</label>
+                <select id="redeemEwalletType" class="admin-input">
+                    <option value="DANA">DANA</option>
+                    <option value="SeaBank">SeaBank</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Nomor Rekening / E-Wallet:</label>
+                <input type="number" id="redeemAccountNumber" class="admin-input" placeholder="Contoh: 081234567890">
+            </div>
+            <div class="input-group">
+                <label>Nama Pemilik Rekening:</label>
+                <input type="text" id="redeemAccountName" class="admin-input" placeholder="Contoh: Ahmat Suminta">
+            </div>
+            <div class="modal-btn-row">
+                <button class="btn btn-secondary" onclick="closeRedeemModal()">Batal</button>
+                <button class="btn btn-cash" onclick="processRedeemCash()">Kirim Pengajuan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ADMIN PIN ACCESS -->
+    <div class="modal" id="adminPinModal">
+        <div class="modal-content">
+            <h3>🔒 AKSES ADMIN RAHASIA</h3>
+            <p style="text-align: center;">Masukkan 4-Digit PIN Admin untuk melanjutkan:</p>
+            <input type="password" id="adminPinInput" class="admin-input" maxlength="4" placeholder="****" style="text-align: center; font-size: 1.4rem; letter-spacing: 5px;">
+            <div class="modal-btn-row">
+                <button class="btn btn-secondary" onclick="closeAdminPinModal()">Batal</button>
+                <button class="btn" onclick="verifyAdminPin()">Masuk Panel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ADMIN DASHBOARD PANEL -->
+    <div class="modal" id="adminDashboardModal">
+        <div class="modal-content" style="max-width: 360px;">
+            <h3>👑 PANEL ADMIN CONTROL</h3>
+            <p style="text-align: center; font-size: 0.75rem;">Atur parameter poin, tiket, dan sistem MiniApp secara langsung.</p>
+            <hr style="border-color: var(--border-color); margin: 10px 0;">
+            
+            <div class="admin-section">
+                <label><b>⚡ Suntik / Set Poin User:</b></label>
+                <input type="number" id="adminSetPoinInput" class="admin-input" placeholder="Nominal Poin">
+                <button class="btn" style="padding: 6px; font-size: 0.75rem;" onclick="adminApplyPoin()">Simpan Poin</button>
+            </div>
+
+            <div class="admin-section" style="margin-top: 10px;">
+                <label><b>🎟️ Suntik / Set Tiket User:</b></label>
+                <input type="number" id="adminSetTiketInput" class="admin-input" placeholder="Jumlah Tiket">
+                <button class="btn" style="padding: 6px; font-size: 0.75rem;" onclick="adminApplyTiket()">Simpan Tiket</button>
+            </div>
+
+            <div class="admin-section" style="margin-top: 12px; background: rgba(239, 68, 68, 0.1); padding: 8px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3);">
+                <label style="color: #ef4444;"><b>🛠️ Saklar Status Maintenance:</b></label>
+                <button id="adminToggleMaintBtn" class="btn btn-danger" onclick="adminToggleMaintenance()">Switch ON Maintenance</button>
+            </div>
+
+            <button class="btn btn-secondary" style="margin-top: 15px;" onclick="closeAdminDashboardModal()">Tutup Panel Admin</button>
+        </div>
+    </div>
+
+    <!-- RESULT MODAL -->
+    <div class="modal" id="resultModal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Info System</h3>
+            <p id="modalDesc" style="text-align: center;"></p>
+            <button class="btn" onclick="closeModal()">OK, Mengerti</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+:root {
+    --bg-color: #0b0f19;
+    --panel-bg: rgba(11, 19, 36, 0.4);
+    --accent-color: #00f2fe;
+    --accent-gradient: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+    --mega-gradient: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
+    --super-gradient: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+    --cash-gradient: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    --text-main: #ffffff;
+    --text-muted: #cbd5e1;
+    --border-color: rgba(0, 242, 254, 0.3);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+
+body {
+    background-color: var(--bg-color);
+    background-image: radial-gradient(circle at 50% 0%, rgba(0, 242, 254, 0.12), transparent 70%);
+    color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column;
+    overflow-x: hidden; padding-bottom: 75px;
+}
+
+/* OVERLAY MAINTENANCE PEKAT & AMAN */
+#maintenanceOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #0b0f19;
+    background-image: url('maintenance.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 999999;
+    display: none;
+}
+
+body.is-maintenance #maintenanceOverlay {
+    display: block !important;
+}
+
+/* HEADER & USER PROFILE */
+header { padding: 12px 16px 6px; }
+.header-content { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.profile-avatar {
+    width: 44px; height: 44px; border-radius: 50%; background: var(--accent-gradient);
+    display: flex; align-items: center; justify-content: center; color: #0b0f19;
+    font-weight: 900; font-size: 1.2rem; cursor: pointer; box-shadow: 0 0 12px rgba(0, 242, 254, 0.5);
+    user-select: none;
+}
+.profile-info h1 { font-size: 0.95rem; color: var(--accent-color); font-weight: 800; }
+.profile-info p { font-size: 0.68rem; color: var(--text-muted); }
+
+.user-stats-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
+.stat-card {
+    background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;
+}
+.stat-icon { font-size: 1.1rem; }
+.stat-label { font-size: 0.65rem; color: var(--text-muted); display: block; }
+.stat-card b { font-size: 0.9rem; color: #fff; }
+
+/* RUNNING TICKER */
+.ticker-container {
+    background: rgba(0, 242, 254, 0.08); border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color); overflow: hidden; white-space: nowrap; padding: 6px 0; margin-bottom: 8px;
+}
+.ticker-text {
+    display: inline-block; padding-left: 100%; animation: marquee 120s linear infinite;
+    font-size: 0.72rem; color: #38bdf8; font-weight: bold;
+}
+@keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+
+.container { flex: 1; padding: 0 10px; max-width: 480px; margin: 0 auto; width: 100%; }
+.view-section { display: none; width: 100%; }
+.view-section.active { display: block; }
+
+.panel {
+    background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 18px;
+    padding: 16px 14px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    margin-bottom: 10px; text-align: center; min-height: 72vh; display: flex; flex-direction: column; justify-content: space-between;
+}
+.panel-title { font-size: 1rem; color: var(--accent-color); margin-bottom: 2px; }
+.panel-subtitle { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 10px; }
+
+/* TOKO REDEEM / SHOP */
+.shop-category-title { text-align: left; font-size: 0.8rem; font-weight: bold; color: var(--accent-color); margin: 8px 0 6px; }
+.shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.shop-card {
+    background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px; padding: 10px; text-align: left; position: relative;
+}
+.card-cash { border-color: rgba(34, 197, 94, 0.4); background: rgba(34, 197, 94, 0.04); }
+.shop-card-badge {
+    position: absolute; top: 6px; right: 6px; font-size: 0.55rem; font-weight: 800;
+    padding: 2px 6px; border-radius: 4px; background: rgba(0, 242, 254, 0.2); color: var(--accent-color);
+}
+.badge-cash { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+.shop-card h4 { font-size: 0.75rem; margin-top: 12px; color: #fff; }
+.shop-price { font-size: 0.7rem; color: #facc15; font-weight: bold; margin: 4px 0 8px; }
+.btn-shop { padding: 6px; font-size: 0.7rem; border-radius: 8px; }
+.btn-cash { background: var(--cash-gradient); color: #fff; padding: 6px; font-size: 0.7rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(34, 197, 94, 0.3); }
+
+/* CAROUSEL & SPIN WHEEL */
+.carousel-container { position: relative; overflow: hidden; width: 100%; flex: 1; display: flex; align-items: center; }
+.carousel-track { display: flex; transition: transform 0.3s ease-out; width: 100%; }
+.spin-card { min-width: 100%; flex-shrink: 0; padding: 0 4px; display: flex; flex-direction: column; align-items: center; }
+.carousel-nav { display: flex; justify-content: center; gap: 8px; margin-bottom: 6px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.2); cursor: pointer; }
+.dot.active { background: var(--accent-color); box-shadow: 0 0 8px var(--accent-color); }
+
+.spin-badge-title { font-size: 0.85rem; font-weight: 900; padding: 3px 10px; border-radius: 6px; margin-bottom: 4px; color: #000; }
+.badge-mini { background: #38bdf8; }
+.badge-mega { background: #c084fc; }
+.badge-super { background: #facc15; }
+.card-desc { font-size: 0.68rem; color: var(--text-muted); }
+
+.wheel-container { position: relative; width: 230px; height: 230px; margin: 12px auto; }
+.wheel-pointer {
+    position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
+    border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 22px solid #000;
+    z-index: 20; filter: drop-shadow(0 0 3px #facc15);
+}
+canvas { width: 100%; height: 100%; border-radius: 50%; border: 4px solid var(--accent-color); transition: transform 3s cubic-bezier(0.15, 0.9, 0.2, 1); }
+
+/* GAME BOX ARENA & CARDS */
+.box-category-card {
+    background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color);
+    border-radius: 14px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; text-align: left;
+}
+.mega-border { border-color: rgba(192, 132, 252, 0.4); }
+.super-border { border-color: rgba(250, 204, 21, 0.5); background: rgba(250, 204, 21, 0.03); }
+.box-icon-wrap { font-size: 2rem; width: 45px; text-align: center; }
+.box-card-desc { font-size: 0.68rem; color: var(--text-muted); }
+.box-card-prize { font-size: 0.7rem; color: #22c55e; font-weight: bold; }
+
+.arena-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.btn-back { background: rgba(255,255,255,0.1); color: #fff; border: none; padding: 5px 10px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; }
+
+.box-grid-6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0; }
+.box-grid-15 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
+
+.box-card-item { aspect-ratio: 1; perspective: 1000px; cursor: pointer; }
+.box-card-inner {
+    position: relative; width: 100%; height: 100%; text-align: center;
+    transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d;
+}
+.box-card-item.flipped .box-card-inner { transform: rotateY(180deg); }
+
+.box-card-front, .box-card-back {
+    position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+    border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 10px rgba(0,0,0,0.3); padding: 4px;
+}
+.box-card-front { background: rgba(30, 41, 59, 0.9); font-size: 1.8rem; }
+.box-card-back { background: rgba(15, 23, 42, 0.95); transform: rotateY(180deg); border-color: var(--accent-color); }
+.box-img-asset { width: 70%; height: 70%; object-fit: contain; }
+.box-card-val { font-size: 0.7rem; font-weight: 800; color: #facc15; margin-top: 2px; }
+
+/* BUTTONS & MODALS */
+.btn {
+    background: var(--accent-gradient); color: #0b0f19; border: none; padding: 10px 16px;
+    font-size: 0.82rem; font-weight: bold; border-radius: 10px; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 242, 254, 0.3); transition: 0.2s; width: 100%;
+}
+.btn:active { transform: scale(0.97); }
+.btn-mega { background: var(--mega-gradient); color: #fff; box-shadow: 0 4px 12px rgba(192, 132, 252, 0.3); }
+.btn-super { background: var(--super-gradient); color: #000; box-shadow: 0 4px 12px rgba(250, 204, 21, 0.3); }
+.btn-secondary { background: rgba(255, 255, 255, 0.1); color: #fff; }
+.btn-danger { background: #ef4444; color: #fff; }
+
+.nav-bar {
+    position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 23, 42, 0.96);
+    backdrop-filter: blur(10px); border-top: 1px solid var(--border-color); display: flex; padding: 8px 0; z-index: 100;
+}
+.nav-item {
+    background: none; border: none; color: var(--text-muted); font-size: 0.62rem;
+    display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; flex: 1;
+}
+.nav-item svg { width: 18px; height: 18px; fill: currentColor; }
+.nav-item.active { color: var(--accent-color); font-weight: bold; }
+
+.modal {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85);
+    display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: 0.3s;
+}
+.modal.show { opacity: 1; pointer-events: auto; }
+.modal-content {
+    background: rgba(30, 41, 59, 0.95); border: 1px solid var(--accent-color); padding: 18px;
+    border-radius: 16px; width: 88%; max-width: 330px; backdrop-filter: blur(10px); text-align: left;
+}
+.modal-content h3 { color: var(--accent-color); font-size: 1rem; margin-bottom: 8px; text-align: center; }
+.modal-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+
+.input-group { margin-bottom: 10px; }
+.input-group label { display: block; font-size: 0.68rem; color: var(--text-muted); margin-bottom: 4px; }
+.admin-input {
+    width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--border-color);
+    background: rgba(15, 23, 42, 0.8); color: #fff; font-size: 0.8rem; margin-bottom: 6px;
+}
+.history-list { max-height: 320px; overflow-y: auto; text-align: left; }
+.history-item { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; }
+.history-title { font-size: 0.78rem; font-weight: bold; color: var(--accent-color); }
+.history-time { font-size: 0.65rem; color: #facc15; }
+
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 10px 0; }
+.calendar-day { background: rgba(255, 255, 255, 0.06); border-radius: 6px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
+.calendar-day.checked { background: rgba(34, 197, 94, 0.3); color: #22c55e; font-weight: bold; }
+.calendar-day.today { border: 1px solid var(--accent-color); }
+/* ============================================================
+   NOKOS TEAMWORK AS - MINIAPP SCRIPT (BAGIAN 3)
+   ============================================================ */
+
+// 1. TELEGRAM WEBAPP INIT & BOT CONFIG
+const tg = window.Telegram.WebApp;
+tg.expand();
+
+// Konfigurasi Bot Telegram Admin (Isi dengan Token & Chat ID kamu)
+const TELEGRAM_BOT_TOKEN = "7891234567:AAFx...YOUR_TOKEN_HERE"; 
+const TELEGRAM_ADMIN_CHAT_ID = "7718733535";
+
+// 2. FORCE CLEAR CACHE LAMA & SET MAINTENANCE OFF
+// Hapus memori kuncian lama di HP/Telegram agar layar langsung normal
+if (!localStorage.getItem('nokos_app_reset_v2')) {
+    localStorage.clear();
+    localStorage.setItem('nokos_app_reset_v2', 'true');
+}
+
+let appData = JSON.parse(localStorage.getItem('nokos_app_data')) || {
+    points: 0,
+    tickets: 5,
+    lastCheckIn: "",
+    checkedDays: [],
+    history: [],
+    isMaintenance: false // Default MATI agar layar tidak tertutup
+};
+
+function saveData() {
+    localStorage.setItem('nokos_app_data', JSON.stringify(appData));
+    updateUserDisplay();
+}
+
+// 3. UI DISPLAY & USER TELEGRAM INFO
+const userTgId = tg.initDataUnsafe?.user?.id || "67891011";
+const userTgName = tg.initDataUnsafe?.user?.first_name || "User Nokos";
+
+function updateUserDisplay() {
+    document.getElementById('userPoints').innerText = appData.points.toLocaleString('id-ID');
+    document.getElementById('userTickets').innerText = appData.tickets;
+    document.getElementById('userTelegramIdDisplay').innerText = userTgId;
+    document.getElementById('userDisplayName').innerText = userTgName.toUpperCase();
+    document.getElementById('avatarLetter').innerText = userTgName.charAt(0).toUpperCase();
+
+    // Sembunyikan Overlay Maintenance secara tegas jika isMaintenance = false
+    const maintOverlay = document.getElementById('maintenanceOverlay');
+    if (appData.isMaintenance) {
+        document.body.classList.add('is-maintenance');
+        if (maintOverlay) maintOverlay.style.display = 'block';
+    } else {
+        document.body.classList.remove('is-maintenance');
+        if (maintOverlay) maintOverlay.style.display = 'none';
+    }
+}
+updateUserDisplay();
+
+// 4. HIDDEN ADMIN PANEL (TAP PROFIL 5X + PIN 2000)
+let avatarTapCount = 0;
+let avatarTapTimer = null;
+
+function handleAvatarTap() {
+    avatarTapCount++;
+    clearTimeout(avatarTapTimer);
+
+    if (avatarTapCount >= 5) {
+        avatarTapCount = 0;
+        document.getElementById('adminPinInput').value = "";
+        document.getElementById('adminPinModal').classList.add('show');
+    } else {
+        avatarTapTimer = setTimeout(() => {
+            avatarTapCount = 0;
+        }, 1500);
+    }
+}
+
+function verifyAdminPin() {
+    const pin = document.getElementById('adminPinInput').value;
+    if (pin === "2000") {
+        closeAdminPinModal();
+        openAdminDashboard();
+    } else {
+        alert("❌ PIN Admin salah!");
+        document.getElementById('adminPinInput').value = "";
+    }
+}
+
+function closeAdminPinModal() {
+    document.getElementById('adminPinModal').classList.remove('show');
+}
+
+function openAdminDashboard() {
+    document.getElementById('adminSetPoinInput').value = appData.points;
+    document.getElementById('adminSetTiketInput').value = appData.tickets;
+    
+    const maintBtn = document.getElementById('adminToggleMaintBtn');
+    maintBtn.innerText = appData.isMaintenance ? "🟢 SWITCH OFF MAINTENANCE" : "🔴 SWITCH ON MAINTENANCE";
+    maintBtn.className = appData.isMaintenance ? "btn" : "btn btn-danger";
+
+    document.getElementById('adminDashboardModal').classList.add('show');
+}
+
+function closeAdminDashboardModal() {
+    document.getElementById('adminDashboardModal').classList.remove('show');
+}
+
+function adminApplyPoin() {
+    const newPoin = parseInt(document.getElementById('adminSetPoinInput').value) || 0;
+    appData.points = newPoin;
+    saveData();
+    alert(`⚡ Poin berhasil diubah menjadi: ${newPoin.toLocaleString('id-ID')}`);
+}
+
+function adminApplyTiket() {
+    const newTiket = parseInt(document.getElementById('adminSetTiketInput').value) || 0;
+    appData.tickets = newTiket;
+    saveData();
+    alert(`🎟️ Tiket berhasil diubah menjadi: ${newTiket}`);
+}
+
+function adminToggleMaintenance() {
+    appData.isMaintenance = !appData.isMaintenance;
+    saveData();
+    openAdminDashboard();
+}
+
+// 5. NAVIGASI VIEW & CAROUSEL SPIN
+function switchView(viewName) {
+    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+    const targetView = document.getElementById(`view-${viewName}`);
+    if (targetView) targetView.classList.add('active');
+
+    if (viewName === 'shop') document.querySelectorAll('.nav-item')[0].classList.add('active');
+    else if (viewName === 'spin') document.getElementById('navSpinBtn').classList.add('active');
+    else if (viewName === 'box') {
+        document.getElementById('navBoxBtn').classList.add('active');
+        exitBoxArena();
+    }
+    else if (viewName === 'history') {
+        document.querySelectorAll('.nav-item')[3].classList.add('active');
+        renderHistory();
+    }
+    else if (viewName === 'checkin') {
+        document.querySelectorAll('.nav-item')[4].classList.add('active');
+        renderCalendar();
+    }
+}
+
+let currentSlide = 0;
+function switchSlide(index) {
+    currentSlide = index;
+    document.getElementById('carouselTrack').style.transform = `translateX(-${index * 100}%)`;
+    document.querySelectorAll('.dot').forEach((dot, idx) => dot.classList.toggle('active', idx === index));
+}
+
+// 6. SPIN WHEEL SYSTEM (10 SEKTOR)
+const spinPrizes = {
+    0: [ // Mini Spin (1 Tiket)
+        { text: "+150 Poin", val: 150, type: "poin", color: "#38bdf8" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" },
+        { text: "+200 Poin", val: 200, type: "poin", color: "#4facfe" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" },
+        { text: "+1 Tiket", val: 1, type: "tiket", color: "#22c55e" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" },
+        { text: "+300 Poin", val: 300, type: "poin", color: "#00f2fe" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" },
+        { text: "+250 Poin", val: 250, type: "poin", color: "#38bdf8" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" }
+    ],
+    1: [ // Mega Spin (5 Tiket)
+        { text: "+1.000 Poin", val: 1000, type: "poin", color: "#c084fc" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" },
+        { text: "+500 Poin", val: 500, type: "poin", color: "#a855f7" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" },
+        { text: "+2 Tiket", val: 2, type: "tiket", color: "#22c55e" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" },
+        { text: "+5.000 Poin", val: 5000, type: "poin", color: "#facc15" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" },
+        { text: "+800 Poin", val: 800, type: "poin", color: "#c084fc" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" }
+    ],
+    2: [ // Super Spin (25 Tiket)
+        { text: "TUNAI 100K", val: 100000, type: "cash", color: "#facc15" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" },
+        { text: "ZONK", val: 0, type: "zonk", color: "#ef4444" }
+    ]
+};
+
+function drawWheel(canvasId, sliceList) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = canvas.width / 2 - 5;
+    const arcSize = (2 * Math.PI) / sliceList.length;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    sliceList.forEach((slice, i) => {
+        const angle = i * arcSize;
+        ctx.beginPath();
+        ctx.fillStyle = slice.color;
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, angle, angle + arcSize);
+        ctx.lineTo(centerX, centerY);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(angle + arcSize / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#000000";
+        ctx.font = "bold 11px sans-serif";
+        ctx.fillText(slice.text, radius - 12, 4);
+        ctx.restore();
+    });
+}
+
+for (let i = 0; i < 3; i++) {
+    drawWheel(`wheelCanvas${i}`, spinPrizes[i]);
+}
+
+let currentRotations = [0, 0, 0];
+
+function startSpin(tierIndex, cost) {
+    if (appData.tickets < cost) {
+        showModal("Tiket Kurang! ❌", `Kamu butuh ${cost} tiket untuk memutar roda ini.`);
+        return;
+    }
+
+    appData.tickets -= cost;
+    saveData();
+
+    const canvas = document.getElementById(`wheelCanvas${tierIndex}`);
+    const listPrizes = spinPrizes[tierIndex];
+
+    let targetIdx = 1; // Default Zonk
+    if (tierIndex === 0) {
+        const validIdxs = [0, 2, 4, 6, 8];
+        targetIdx = validIdxs[Math.floor(Math.random() * validIdxs.length)];
+    } else if (tierIndex === 1) {
+        const rand = Math.random();
+        if (rand < 0.02) targetIdx = 0; // 2% 1.000 Poin
+        else if (rand < 0.03) targetIdx = 6; // 1% 5.000 Poin
+        else targetIdx = 1; // Zonk
+    } else {
+        targetIdx = 1; // Super Spin Zonk 100%
+    }
+
+    const sliceDegree = 360 / listPrizes.length;
+    const targetAngle = 270 - (targetIdx * sliceDegree + sliceDegree / 2);
+
+    currentRotations[tierIndex] += 1800 + (targetAngle - (currentRotations[tierIndex] % 360));
+    canvas.style.transform = `rotate(${currentRotations[tierIndex]}deg)`;
+
+    setTimeout(() => {
+        const item = listPrizes[targetIdx];
+        if (item.type === "zonk") {
+            showModal("Belum Rezeki! 😭", "Sayang sekali, roda berhenti di ZONK. Coba lagi besok, Bro!");
+        } else if (item.type === "poin") {
+            appData.points += item.val;
+            saveData();
+            showModal("Selamat! 🎉", `Kamu mendapatkan tambahan <b>+${item.val} Poin</b>!`);
+        } else if (item.type === "tiket") {
+            appData.tickets += item.val;
+            saveData();
+            showModal("Selamat! 🎉", `Kamu mendapatkan <b>+${item.val} Tiket Gratis</b>!`);
+        }
+    }, 3000);
+}
+/* ============================================================
+   NOKOS TEAMWORK AS - MINIAPP SCRIPT (BAGIAN 4)
+   ============================================================ */
+
+// 7. GAME BOX SYSTEM (MINI, MEGA, & DRAMA SUPER BOX)
+let currentBoxTier = '';
+let isBoxArenaActive = false;
+let superBoxStep = 0;
+let boxConfirmTier = '';
+let boxConfirmCost = 0;
+
+// Pop-up Konfirmasi Sebelum Tiket Terpotong (Mini & Mega Box)
+function openBoxConfirm(tier) {
+    boxConfirmTier = tier;
+    boxConfirmCost = (tier === 'mini') ? 1 : 5;
+    
+    const titleEl = document.getElementById('boxConfirmTitle');
+    const descEl = document.getElementById('boxConfirmDesc');
+    const actionBtn = document.getElementById('boxStartActionBtn');
+
+    titleEl.innerText = (tier === 'mini') ? "MAIN MINI BOX" : "MAIN MEGA BOX";
+    descEl.innerHTML = `Kamu akan menggunakan <b>${boxConfirmCost} Tiket Game Box</b>.<br>Yakin ingin mulai bermain sekarang?`;
+    
+    actionBtn.onclick = function() {
+        closeBoxConfirmModal();
+        enterNormalBoxArena(boxConfirmTier, boxConfirmCost);
+    };
+
+    document.getElementById('boxConfirmModal').classList.add('show');
+}
+
+function closeBoxConfirmModal() {
+    document.getElementById('boxConfirmModal').classList.remove('show');
+}
+
+// Arena Mini & Mega Box (Akumulasi Poin Random Ganjil)
+function enterNormalBoxArena(tier, cost) {
+    if (appData.tickets < cost) {
+        showModal("Tiket Kurang! ❌", `Kamu butuh ${cost} tiket untuk bermain di ${tier.toUpperCase()} BOX.`);
+        return;
+    }
+
+    appData.tickets -= cost;
+    saveData();
+
+    currentBoxTier = tier;
+    isBoxArenaActive = true;
+
+    document.getElementById('boxCategoryList').style.display = 'none';
+    document.getElementById('boxArenaArea').style.display = 'block';
+    
+    const badgeEl = document.getElementById('arenaTitleBadge');
+    badgeEl.innerText = (tier === 'mini') ? "MINI BOX (6 Kotak)" : "MEGA BOX (6 Kotak)";
+    badgeEl.className = (tier === 'mini') ? "spin-badge-title badge-mini" : "spin-badge-title badge-mega";
+
+    document.getElementById('arenaSubInstructions').innerText = "Buka ke-6 kotak untuk mengumpulkan seluruh poin acak kamu!";
+
+    generateBoxGrid6(tier);
+}
+
+function generateBoxGrid6(tier) {
+    const container = document.getElementById('boxGridContainer');
+    container.className = 'box-grid-6';
+    container.innerHTML = '';
+
+    const maxLimit = (tier === 'mini') ? 500 : 1000;
+    
+    // Generate angka acak ganjil/unik untuk 4-5 kotak
+    const pointsArray = [];
+    let accumulated = 0;
+    const boxCount = 6;
+    const zonkCount = Math.floor(Math.random() * 2) + 1; // 1 atau 2 Zonk
+
+    for (let i = 0; i < (boxCount - zonkCount); i++) {
+        let randVal = (Math.floor(Math.random() * 80) + 11) * 2 + 1; // Angka ganjil
+        if (accumulated + randVal > maxLimit) {
+            randVal = Math.max(7, maxLimit - accumulated);
+        }
+        accumulated += randVal;
+        pointsArray.push(randVal);
+    }
+
+    while (pointsArray.length < boxCount) {
+        pointsArray.push(0); // Zonk
+    }
+
+    // Acak posisi kotak
+    pointsArray.sort(() => Math.random() - 0.5);
+
+    let sessionTotalPoints = 0;
+    let openedCount = 0;
+
+    pointsArray.forEach((val, idx) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'box-card-item';
+        itemEl.innerHTML = `
+            <div class="box-card-inner">
+                <div class="box-card-front">🎁</div>
+                <div class="box-card-back">
+                    ${val === 0 ? '<img src="zonk.png" class="box-img-asset" alt="Zonk">' : `<div class="box-card-val">+${val}</div>`}
+                </div>
+            </div>
+        `;
+
+        itemEl.onclick = function() {
+            if (this.classList.contains('flipped')) return;
+            this.classList.add('flipped');
+            openedCount++;
+
+            if (val > 0) {
+                sessionTotalPoints += val;
+            }
+
+            // Selesai jika semua 6 kotak terbuka
+            if (openedCount === 6) {
+                setTimeout(() => {
+                    appData.points += sessionTotalPoints;
+                    saveData();
+                    showModal("Sesi Selesai! 🎉", `Total poin yang berhasil kamu kumpulkan: <b style="color:#facc15; font-size:1.2rem;">+${sessionTotalPoints} Poin</b>!`);
+                    exitBoxArena();
+                }, 800);
+            }
+        };
+
+        container.appendChild(itemEl);
+    });
+}
+
+// Arena Super Box (Drama 30 Tiket: Klik 1 Win, Klik 2 Win, Klik 3 Zonk)
+function enterSuperBoxArena() {
+    const cost = 30;
+    if (appData.tickets < cost) {
+        showModal("Tiket Kurang! ❌", `Kamu butuh ${cost} tiket untuk bermain di SUPER BOX.`);
+        return;
+    }
+
+    appData.tickets -= cost;
+    saveData();
+
+    currentBoxTier = 'super';
+    superBoxStep = 0;
+    isBoxArenaActive = true;
+
+    document.getElementById('boxCategoryList').style.display = 'none';
+    document.getElementById('boxArenaArea').style.display = 'block';
+
+    const badgeEl = document.getElementById('arenaTitleBadge');
+    badgeEl.innerText = "SUPER BOX (15 Kotak)";
+    badgeEl.className = "spin-badge-title badge-super";
+
+    document.getElementById('arenaSubInstructions').innerText = "Pilih 3 kotak! Temukan 3 kartu JACKPOT WIN secara beruntun untuk membawa pulang Rp100.000 TUNAI!";
+
+    generateSuperBoxGrid15();
+}
+
+function generateSuperBoxGrid15() {
+    const container = document.getElementById('boxGridContainer');
+    container.className = 'box-grid-15';
+    container.innerHTML = '';
+
+    for (let i = 0; i < 15; i++) {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'box-card-item';
+        itemEl.setAttribute('data-index', i);
+        itemEl.innerHTML = `
+            <div class="box-card-inner">
+                <div class="box-card-front">👑</div>
+                <div class="box-card-back" id="superBack_${i}"></div>
+            </div>
+        `;
+
+        itemEl.onclick = function() {
+            if (!isBoxArenaActive || this.classList.contains('flipped')) return;
+
+            superBoxStep++;
+            this.classList.add('flipped');
+            const backEl = document.getElementById(`superBack_${i}`);
+
+            if (superBoxStep === 1 || superBoxStep === 2) {
+                // Klik 1 & 2: Otomatis JACKPOT WIN (win.png)
+                backEl.innerHTML = `<img src="win.png" class="box-img-asset" alt="WIN"><div class="box-card-val" style="color:#22c55e;">WIN</div>`;
+            } else if (superBoxStep === 3) {
+                // Klik 3: Otomatis ZONK (zonk.png) -> Gagal
+                backEl.innerHTML = `<img src="zonk.png" class="box-img-asset" alt="ZONK"><div class="box-card-val" style="color:#ef4444;">ZONK</div>`;
+                isBoxArenaActive = false;
+
+                // Transparankan / Buka sisa 12 kotak lainnya
+                setTimeout(() => {
+                    revealRemainingSuperBoxes();
+                    showModal("Aduh, Hampir Dikit Lagi! 😭", "Kotak ke-3 kamu menyentuh ZONK! Kamu gagal Match-3 untuk Rp100.000 DANA. Kumpulkan 30 Tiket lagi dan coba keberuntunganmu!");
+                }, 700);
+            }
+        };
+
+        container.appendChild(itemEl);
+    }
+}
+
+function revealRemainingSuperBoxes() {
+    const allCards = document.querySelectorAll('.box-grid-15 .box-card-item');
+    allCards.forEach((card, idx) => {
+        if (!card.classList.contains('flipped')) {
+            const backEl = document.getElementById(`superBack_${idx}`);
+            if (idx === 7) {
+                backEl.innerHTML = `<img src="win.png" class="box-img-asset" alt="WIN"><div class="box-card-val" style="color:#22c55e;">WIN</div>`;
+            } else {
+                backEl.innerHTML = `<img src="zonk.png" class="box-img-asset" alt="ZONK"><div class="box-card-val" style="color:#ef4444;">ZONK</div>`;
+            }
+            card.classList.add('flipped');
+        }
+    });
+}
+
+function exitBoxArena() {
+    isBoxArenaActive = false;
+    document.getElementById('boxCategoryList').style.display = 'block';
+    document.getElementById('boxArenaArea').style.display = 'none';
+}
+
+// 8. TOKO REDEEM & TELEGRAM BOT API INTEGRATION
+let activeRedeemItem = null;
+
+function confirmRedeem(itemName, pointsCost, type) {
+    if (appData.points < pointsCost) {
+        showModal("Poin Kurang! ❌", `Kamu butuh <b>${pointsCost.toLocaleString('id-ID')} Poin</b> untuk menukarkan item ini.`);
+        return;
+    }
+
+    activeRedeemItem = { itemName, pointsCost, type };
+
+    if (type === 'bot') {
+        if (confirm(`Yakin ingin menukarkan ${pointsCost.toLocaleString('id-ID')} Poin dengan ${itemName}?`)) {
+            processRedeemBot();
+        }
+    } else if (type === 'cash') {
+        document.getElementById('redeemModalTitle').innerText = `${itemName} (${pointsCost.toLocaleString('id-ID')} Poin)`;
+        document.getElementById('redeemModal').classList.add('show');
+    }
+}
+
+function closeRedeemModal() {
+    document.getElementById('redeemModal').classList.remove('show');
+}
+
+// Tukar Voucher Saldo Bot Telegram
+function processRedeemBot() {
+    appData.points -= activeRedeemItem.pointsCost;
+    
+    const redeemRecord = {
+        id: Date.now(),
+        title: activeRedeemItem.itemName,
+        type: "Voucher Bot",
+        date: new Date().toLocaleString('id-ID')
+    };
+
+    appData.history.unshift(redeemRecord);
+    saveData();
+
+    // Kirim Notifikasi via Telegram Bot API
+    sendTelegramNotification(`🤖 <b>PENGAJUAN VOUCHER SALDO BOT</b>\n\n👤 <b>User:</b> ${userTgName}\n🆔 <b>ID Telegram:</b> <code>${userTgId}</code>\n🎁 <b>Item:</b> ${activeRedeemItem.itemName}\n💎 <b>Poin Dipakai:</b> ${activeRedeemItem.pointsCost.toLocaleString('id-ID')}`);
+
+    showModal("Tukar Berhasil! 🎉", "Pengajuan Voucher Saldo Bot kamu telah terkirim ke Admin. Silakan tunggu konfirmasi selanjutnya!");
+}
+
+// Tukar Saldo Tunai (DANA / SeaBank)
+function processRedeemCash() {
+    const ewallet = document.getElementById('redeemEwalletType').value;
+    const accNum = document.getElementById('redeemAccountNumber').value.trim();
+    const accName = document.getElementById('redeemAccountName').value.trim();
+
+    if (!accNum || !accName) {
+        alert("⚠️ Mohon isi nomor dan nama pemilik rekening dengan lengkap!");
+        return;
+    }
+
+    closeRedeemModal();
+
+    appData.points -= activeRedeemItem.pointsCost;
+
+    const redeemRecord = {
+        id: Date.now(),
+        title: `${activeRedeemItem.itemName} (${ewallet})`,
+        type: "Cair Tunai",
+        date: new Date().toLocaleString('id-ID')
+    };
+
+    appData.history.unshift(redeemRecord);
+    saveData();
+
+    // Kirim Notifikasi Detail ke Bot Telegram Admin
+    const msg = `💸 <b>PENGAJUAN CAIR TUNAI (DANA / SEABANK)</b>\n\n👤 <b>User:</b> ${userTgName}\n🆔 <b>ID Telegram:</b> <code>${userTgId}</code>\n🎁 <b>Nominal:</b> ${activeRedeemItem.itemName}\n🏦 <b>Metode:</b> ${ewallet}\n💳 <b>No. Rekening/E-Wallet:</b> <code>${accNum}</code>\n👤 <b>A.N. Rekening:</b> ${accName}\n💎 <b>Poin Dipakai:</b> ${activeRedeemItem.pointsCost.toLocaleString('id-ID')}`;
+    
+    sendTelegramNotification(msg);
+
+    showModal("Pengajuan Diterima! 🚀", "Pengajuan cair tunai kamu telah berhasil dikirim ke Admin. Saldo akan ditransfer setelah verifikasi selesai!");
+}
+
+function sendTelegramNotification(textMessage) {
+    if (TELEGRAM_BOT_TOKEN.includes("YOUR_TOKEN_HERE")) return;
+
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+    fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            chat_id: TELEGRAM_ADMIN_CHAT_ID,
+            text: textMessage,
+            parse_mode: "HTML"
+        })
+    }).catch(err => console.error("Gagal kirim notif telegram:", err));
+}
+
+// 9. RIWAYAT TRANSACTION & CALENDAR CHECK-IN
+function renderHistory() {
+    const container = document.getElementById('historyListContainer');
+    if (appData.history.length === 0) {
+        container.innerHTML = `<div style="color: var(--text-muted); font-size: 0.8rem; padding: 20px; text-align: center;">Belum ada riwayat transaksi.</div>`;
+        return;
+    }
+
+    container.innerHTML = '';
+    appData.history.forEach(item => {
+        container.innerHTML += `
+            <div class="history-item">
+                <div class="history-title">${item.title}</div>
+                <div class="history-time">📅 ${item.date} | Status: Diproses Admin</div>
+            </div>
+        `;
+    });
+}
+
+function renderCalendar() {
+    const grid = document.getElementById('calendarGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+    const totalDays = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+
+    for (let i = 1; i <= totalDays; i++) {
+        const dateStr = `${now.getFullYear()}-${now.getMonth() + 1}-${i}`;
+        const isChecked = appData.checkedDays.includes(dateStr);
+
+        const dayEl = document.createElement('div');
+        dayEl.className = 'calendar-day' + (isChecked ? ' checked' : '') + (i === now.getDate() ? ' today' : '');
+        dayEl.innerText = i + (isChecked ? ' ✔️' : '');
+        grid.appendChild(dayEl);
+    }
+
+    const btn = document.getElementById('checkinBtn');
+    if (appData.lastCheckIn === todayStr) {
+        btn.innerText = "Sudah Check-in Hari Ini ✅";
+        btn.disabled = true;
+    } else {
+        btn.innerText = "Check-in Hari Ini ✅ (+1 Tiket Gratis)";
+        btn.disabled = false;
+    }
+}
+
+function doCheckIn() {
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+
+    if (appData.lastCheckIn === todayStr) return;
+
+    appData.lastCheckIn = todayStr;
+    appData.checkedDays.push(todayStr);
+    appData.tickets += 1;
+
+    saveData();
+    renderCalendar();
+    showModal("Check-in Berhasil! 🌟", "Kamu mendapatkan <b>+1 Tiket Gratis</b> hari ini!");
+}
+
+// 10. MODAL UTILITY
+function showModal(title, desc) {
+    document.getElementById('modalTitle').innerText = title;
+    document.getElementById('modalDesc').innerHTML = desc;
+    document.getElementById('resultModal').classList.add('show');
+}
+
+function closeModal() {
+    document.getElementById('resultModal').classList.remove('show');
+}
